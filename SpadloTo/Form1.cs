@@ -102,11 +102,20 @@ namespace SpadloTo
             _logFiles.Add(networkFile);
         }
 
+        private void OpenLogFile()
+        {
+            System.Diagnostics.Process.Start(_sharedDirPath + "\\" + LOG_FILE_NAME);
+        }
+
         private void InitTray()
         {
             _trayIcon = new NotifyIcon();
-            var item = new MenuItem("Zavřít", (o, e) => { this.Close(); });
-            var context = new ContextMenu(new[] {item});
+            var menuItems = new List<MenuItem>
+            {
+                new MenuItem("Otevřít log", (o, e) => { this.OpenLogFile(); }),
+                new MenuItem("Ukončit", (o, e) => { this.Close(); })
+            };
+            var context = new ContextMenu(menuItems.ToArray());
             _trayIcon.ContextMenu = context;
             _trayIcon.Visible = true;
             _trayIcon.Icon = this.Icon;
@@ -147,7 +156,7 @@ namespace SpadloTo
             var user = $"{Environment.UserName}";
 
             var sb = new StringBuilder();
-            sb.AppendLine($"{time}\t{user}\t\t{process.ToUpper()}\tCRASH!");
+            sb.AppendLine($"{time}\t{user}\t\t{process}\tCRASH!");
 
             foreach (var logFile in _logFiles)
             {
